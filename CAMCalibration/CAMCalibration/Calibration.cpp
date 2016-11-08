@@ -109,7 +109,7 @@ int main()
 	// 检查摄像头打开是否成功
 	if (!capleft.isOpened())
 		return -1;
-	cout << "Press W to write image for analysis." << endl << "Press Q to quit." << endl;
+	cout << "Press W to analysis correct frame." << endl << "Press Q to quit the program." << endl;
 
 	//取得9张适合检测的棋盘图片
 	while (goodFrameCount < frameNumber)
@@ -117,11 +117,10 @@ int main()
 		//从摄像头取得一帧
 		capleft >> img;
 
-		cvtColor(img, grayImage, CV_BGR2GRAY);
-
 		//显示一帧画面
 		imshow("Capture", img);
 
+		//读取按键W
 		if (cvWaitKey(10) == 'w')
 		{
 			Mat rgbImage = img;
@@ -135,6 +134,7 @@ int main()
 				Size(-1,-1) 死区的一半尺寸
 				TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 20, 0.1)迭代终止条件
 				*/
+				cvtColor(img, grayImage, CV_BGR2GRAY);
 				cornerSubPix(grayImage, corner, Size(5, 5), Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 20, 0.1));
 				//在图像上画出角点
 				drawChessboardCorners(rgbImage, boardSize, corner, isFind);
@@ -144,18 +144,18 @@ int main()
 				corners.push_back(corner);
 
 				goodFrameCount++;
-				cout << "The image is good" << endl;
+				cout << "The image No." << goodFrameCount << " is good!" << endl;
 			}
 			//如果图像不符合检测标准
 			else
 			{
-				cout << "Can not find the correct chessboard please try again!" << endl;
+				cout << "The image No." << goodFrameCount + 1 << " is bad please try again!" << endl;
 			}
 		}
+		//读取按键Q
 		if (cvWaitKey(10) == 'q')
 			return 0;
 	}
-
 
 	//图像采集完毕 接下来开始摄像头的校正
 	//calibrateCamera()
